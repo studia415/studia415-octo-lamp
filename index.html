@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ритм — танцевальная группа</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: #24243a;
+      background: #f5f6fa;
+      font: 15px/1.5 Arial, sans-serif;
+    }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .layout { min-height: 100vh; display: flex; }
+    aside {
+      width: 230px;
+      flex-shrink: 0;
+      padding: 24px 16px;
+      background: #fff;
+      border-right: 1px solid #e8e9f0;
+    }
+    .brand { margin: 0 10px 28px; font-size: 21px; font-weight: 700; }
+    .brand span { color: #7357e8; }
+    nav { display: grid; gap: 6px; }
+    nav button {
+      padding: 11px 12px;
+      border: 0;
+      border-radius: 9px;
+      color: #626579;
+      background: transparent;
+      text-align: left;
+    }
+    nav button:hover, nav button.active {
+      color: #7357e8;
+      background: #f0edff;
+    }
+    main { min-width: 0; flex: 1; padding: 30px clamp(16px, 4vw, 48px); }
+    header { margin-bottom: 24px; }
+    h1 { margin: 0; font-size: 30px; }
+    h2 { margin: 0; font-size: 20px; }
+    .muted { color: #85899d; }
+    .page-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 20px 0;
+    }
+    .btn {
+      padding: 10px 14px;
+      border: 0;
+      border-radius: 9px;
+      color: #fff;
+      background: #7357e8;
+      font-weight: 700;
+    }
+    .btn.secondary { color: #333; background: #eeeef4; }
+    .btn:hover { filter: brightness(.95); }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .stat, .card {
+      padding: 18px;
+      border: 1px solid #e9eaf0;
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 8px 24px #28284a0a;
+    }
+    .stat strong { display: block; margin-top: 5px; font-size: 28px; }
+    .grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: 16px; }
+    .card h3 { margin: 0 0 14px; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td {
+      padding: 12px 10px;
+      border-bottom: 1px solid #eeeef3;
+      text-align: left;
+      white-space: nowrap;
+    }
+    th { color: #85899d; font-size: 12px; }
+    tr:last-child td { border-bottom: 0; }
+    .input {
+      width: 100%;
+      padding: 9px 10px;
+      border: 1px solid #dfe1e9;
+      border-radius: 8px;
+      background: #fff;
+    }
+    .toolbar { margin-bottom: 12px; }
+    .toolbar .input { max-width: 320px; }
+    .actions { display: flex; gap: 6px; }
+    .small-btn {
+      padding: 6px 8px;
+      border: 1px solid #e5e6ed;
+      border-radius: 7px;
+      background: #fff;
+    }
+    .small-btn:hover { background: #f5f5fa; }
+    .event {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      padding: 11px 0;
+      border-bottom: 1px solid #eeeef3;
+    }
+    .event:last-child { border: 0; }
+    .event-date {
+      min-width: 55px;
+      padding: 7px;
+      border-radius: 9px;
+      color: #7357e8;
+      background: #f0edff;
+      text-align: center;
+      font-weight: 700;
+    }
+    .event-date small { display: block; }
+    .empty { padding: 24px 10px; color: #85899d; text-align: center; }
+    .modal-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      display: grid;
+      place-items: center;
+      padding: 16px;
+      background: #17172b70;
+    }
+    .modal {
+      width: min(440px, 100%);
+      padding: 22px;
+      border-radius: 14px;
+      background: #fff;
+    }
+    .modal h2 { margin-bottom: 16px; }
+    .field { margin-bottom: 12px; }
+    .field label { display: block; margin-bottom: 5px; color: #686d80; font-size: 13px; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+    max-width: 850px {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .grid { grid-template-columns: 1fr; }
+    }max-width: 600px {
+      .layout { display: block; }
+      aside { width: 100%; padding: 12px; border-right: 0; border-bottom: 1px solid #e8e9f0; }
+      .brand { margin: 0 8px 10px; }
+      nav { display: flex; overflow-x: auto; }
+      nav button { white-space: nowrap; }
+      main { padding: 20px 14px; }
+      h1 { font-size: 25px; }
+    }
+  </style>
+</head>
+<body>
+<div class="layout">
+  <aside>
+    <div class="brand"><span>♪</span> Ритм</div>
+    <nav>
+      <button class="active" data-page="overview">Обзор</button>
+      <button data-page="members">Участники</button>
+      <button data-page="schedule">Расписание</button>
+      <button data-page="attendance">Посещаемость</button>
+    </nav>
+  </aside>
+
+  <main>
+    <header>
+      <h1 id="title">Обзор</h1>
+      <div class="muted" id="date"></div>
+    </header>
+    <section id="content"></section>
+  </main>
+</div>
+<div id="modal-root"></div>
+
+<script>
+(() => {
+  const KEY = "dance-group-system";
+  const $ = (selector, root = document) => root.querySelector(selector);
+  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2);
+
+  const load = () => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(KEY));
+      if (saved) return saved;
+    } catch (_) {}
+    return { members: [], sessions: [], attendance: {} };
+  };
+
+  let data = load();
+  let page = "overview";
+  let search = "";
+  let selectedSession = "";
+
+  const save = () => localStorage.setItem(KEY, JSON.stringify(data));
+  const esc = value => String(value || "").replace(/[&<>"']/g, c =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "'" })[c]
+  );
+  const dateText = value => new Date(value).toLocaleDateString("ru-RU", {
+    day: "numeric", month: "short", year: "numeric"
+  });
+  const timeText = value => new Date(value).toLocaleTimeString("ru-RU", {
+    hour: "2-digit", minute: "2-digit"
+  });
+
+  function showPage(nextPage) {
+    page = nextPage;
+    document.querySelectorAll("nav button").forEach(button =>
+      button.classList.toggle("active", button.dataset.page === page)
+    );
+    render();
+  }
+
+  function render() {
+    const titles = {
+      overview: "Обзор",
+      members: "Участники",
+      schedule: "Расписание",
+      attendance: "Посещаемость"
+    };
+    $("#title").textContent = titles[page];
+    $("#date").textContent = new Date().toLocaleDateString("ru-RU", {
+      weekday: "long", day: "numeric", month: "long"
+    });
+
+    if (page === "overview") renderOverview();
+    if (page === "members") renderMembers();
+    if (page === "schedule") renderSchedule();
+    if (page === "attendance") renderAttendance();
+  }
+
+  function renderOverview() {
+    const upcoming = data.sessions
+      .filter(s => new Date(s.datetime) >= new Date())
+      .sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
+    const paid = data.members.filter(m => m.payment === "Оплачено").length;
+
+    $("#content").innerHTML = `
+      <div class="stats">
+        <div class="stat"><span class="muted">Участники</span><strong>${data.members.length}</strong></div>
+        <div class="stat"><span class="muted">Ближайшие занятия</span><strong>${upcoming.length}</strong></div>
+        <div class="stat"><span class="muted">Оплатили</span><strong>${paid}</strong></div>
+        <div class="stat"><span class="muted">Всего занятий</span><strong>${data.sessions.length}</strong></div>
+      </div>
+      <div class="grid">
+        <div class="card">
+          <h3>Ближайшие занятия</h3>
+          ${upcoming.length ? upcoming.slice(0, 5).map(s => `
+            <div class="event">
+              <div class="event-date"><small>${esc(dateText(s.datetime).split(" ")[1])}</small>${new Date(s.datetime).getDate()}</div>
+              <div><strong>${esc(s.title)}</strong>
+<span class="muted">${esc(timeText(s.datetime))} · ${esc(s.place)}</span></div>
+            </div>
+          `).join("") : '<div class="empty">Занятий пока нет.</div>'}
+        </div>
+        <div class="card"><h3>Оплата группы</h3><p class="muted">Оплачено: ${paid} из ${data.members.length}</p>
+          <progress value="${paid}" max="${Math.max(data.members.length, 1)}" style="width:100%;height:12px"></progress>
+        </div>
+      </div>`;
+  }
+
+  function renderMembers() {
+    const members = data.members.filter(m =>
+      `${m.name} ${m.phone} ${m.style}`.toLowerCase().includes(search.toLowerCase())
+    );
+
+    $("#content").innerHTML = `
+      <div class="page-head">
+        <h2>Список участников</h2>
+        <button class="btn" id="add-member">＋ Добавить</button>
+      </div>
+      <div class="toolbar">
+        <input class="input" id="search" placeholder="Поиск участника…" value="${esc(search)}">
+      </div>
+      <div class="card table-wrap">
+        <table>
+          <thead><tr><th>Имя</th><th>Телефон</th><th>Направление</th><th>Оплата</th><th>Действия</th></tr></thead>
+          <tbody>
+            ${members.length ? members.map(m => `
+              <tr>
+                <td>${esc(m.name)}</td>
+                <td>${esc(m.phone || "—")}</td>
+                <td>${esc(m.style || "—")}</td>
+                <td><select class="input payment" data-id="${esc(m.id)}">
+                  ${["Оплачено", "Ожидает", "Долг"].map(x => `<option ${m.payment === x ? "selected" : ""}>${x}</option>`).join("")}
+                </select></td>
+                <td><div class="actions">
+                  <button class="small-btn edit-member" data-id="${esc(m.id)}">Изменить</button>
+                  <button class="small-btn delete-member" data-id="${esc(m.id)}">Удалить</button>
+                </div></td>
+              </tr>
+            `).join("") : '<tr><td colspan="5" class="empty">Участников пока нет.</td></tr>'}
+          </tbody>
+        </table>
+      </div>`;
+
+    $("#add-member").onclick = () => memberModal();
+    $("#search").oninput = event => {
+      search = event.target.value;
+      renderMembers();
+      $("#search").focus();
+      $("#search").setSelectionRange(search.length, search.length);
+    };
+    document.querySelectorAll(".payment").forEach(select => {
+      select.onchange = () => {
+        const member = data.members.find(m => m.id === select.dataset.id);
+        if (member) { member.payment = select.value; save(); }
+      };
+    });
+    document.querySelectorAll(".edit-member").forEach(button => {
+      button.onclick = () => memberModal(data.members.find(m => m.id === button.dataset.id));
+    });
+    document.querySelectorAll(".delete-member").forEach(button => {
+      button.onclick = () => {
+        if (!confirm("Удалить участника?")) return;
+        data.members = data.members.filter(m => m.id !== button.dataset.id);
+        Object.values(data.attendance).forEach(record => delete record[button.dataset.id]);
+        save();
+        render();
+      };
+    });
+  }
+
+  function renderSchedule() {
+    const sessions = [...data.sessions].sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
+    $("#content").innerHTML = `
+      <div class="page-head">
+        <h2>Расписание занятий</h2>
+        <button class="btn" id="add-session">＋ Добавить занятие</button>
+      </div>
+      <div class="card table-wrap">
+        <table>
+          <thead><tr><th>Дата и время</th><th>Занятие</th><th>Место</th><th>Тренер</th><th>Действия</th></tr></thead>
+          <tbody>
+            ${sessions.length ? sessions.map(s => `
+              <tr>
+                <td>${esc(dateText(s.datetime))}
+<span class="muted">${esc(timeText(s.datetime))}</span></td>
+                <td>${esc(s.title)}</td><td>${esc(s.place || "—")}</td><td>${esc(s.coach || "—")}</td>
+                <td><div class="actions">
+                  <button class="small-btn edit-session" data-id="${esc(s.id)}">Изменить</button>
+                  <button class="small-btn delete-session" data-id="${esc(s.id)}">Удалить</button>
+                </div></td>
+              </tr>
+            `).join("") : '<tr><td colspan="5" class="empty">Занятий пока нет.</td></tr>'}
+          </tbody>
+        </table>
+      </div>`;$("#add-session").onclick = () => sessionModal();
+    document.querySelectorAll(".edit-session").forEach(button => {
+      button.onclick = () => sessionModal(data.sessions.find(s => s.id === button.dataset.id));
+    });
+    document.querySelectorAll(".delete-session").forEach(button => {
+      button.onclick = () => {
+        if (!confirm("Удалить занятие?")) return;
+        data.sessions = data.sessions.filter(s => s.id !== button.dataset.id);
+        delete data.attendance[button.dataset.id];
+        save();
+        render();
+      };
+    });
+  }
+
+  function renderAttendance() {
+    const sessions = [...data.sessions].sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
+    if (!sessions.some(s => s.id === selectedSession)) selectedSession = sessions[0]?.id || "";
+
+    $("#content").innerHTML = sessions.length ? `
+      <div class="page-head"><h2>Отметки посещаемости</h2></div>
+      <div class="toolbar">
+        <select class="input" id="session-select" style="max-width:420px">
+          ${sessions.map(s => `<option value="${esc(s.id)}" ${s.id === selectedSession ? "selected" : ""}>
+            ${esc(dateText(s.datetime))} · ${esc(timeText(s.datetime))} · ${esc(s.title)}
+          </option>`).join("")}
+        </select>
+      </div>
+      <div class="card table-wrap">
+        <table>
+          <thead><tr><th>Участник</th><th>Посещаемость</th></tr></thead>
+          <tbody>
+            ${data.members.length ? data.members.map(m => {
+              const status = data.attendance[selectedSession]?.[m.id] || "Не отмечен";
+              return `<tr>
+                <td>${esc(m.name)}</td>
+                <td><select class="input attendance" data-member="${esc(m.id)}" style="max-width:200px">
+                  ${["Не отмечен", "Был", "Пропуск", "Уважительная"].map(x => `<option ${status === x ? "selected" : ""}>${x}</option>`).join("")}
+                </select></td>
+              </tr>`;
+            }).join("") : '<tr><td colspan="2" class="empty">Сначала добавьте участников.</td></tr>'}
+          </tbody>
+        </table>
+      </div>
+    ` : '<div class="card empty">Сначала добавьте занятие в расписание.</div>';
+
+    const sessionSelect = $("#session-select");
+    if (sessionSelect) sessionSelect.onchange = () => {
+      selectedSession = sessionSelect.value;
+      renderAttendance();
+    };
+    document.querySelectorAll(".attendance").forEach(select => {
+      select.onchange = () => {
+        data.attendance[selectedSession] ||= {};
+        if (select.value === "Не отмечен") delete data.attendance[selectedSession][select.dataset.member];
+        else data.attendance[selectedSession][select.dataset.member] = select.value;
+        save();
+      };
+    });
+  }
+
+  function modal(title, fields, onSave) {
+    $("#modal-root").innerHTML = `
+      <div class="modal-bg">
+        <div class="modal" role="dialog" aria-modal="true">
+          <h2>${esc(title)}</h2>
+          <form id="form">${fields}
+            <div class="modal-actions">
+              <button type="button" class="btn secondary" id="cancel">Отмена</button>
+              <button type="submit" class="btn">Сохранить</button>
+            </div>
+          </form>
+        </div>
+      </div>`;
+
+    $("#cancel").onclick = () => $("#modal-root").innerHTML = "";
+    $(".modal-bg").onclick = event => {
+      if (event.target.classList.contains("modal-bg")) $("#modal-root").innerHTML = "";
+    };
+    $("#form").onsubmit = event => {
+      event.preventDefault();
+      onSave(Object.fromEntries(new FormData(event.currentTarget)));
+      save();
+      $("#modal-root").innerHTML = "";
+      render();
+    };
+  }
+
+  function memberModal(member) {
+    const m = member || {};
+    modal(member ? "Изменить участника" : "Новый участник", `
+      <div class="field"><label>Имя и фамилия *</label>
+        <input class="input" name="name" required value="${esc(m.name)}"></div>
+      <div class="field"><label>Телефон</label>
+        <input class="input" name="phone" value="${esc(m.phone)}"></div><div class="field"><label>Танцевальное направление</label>
+        <input class="input" name="style" value="${esc(m.style)}"></div>
+      <div class="field"><label>Оплата</label>
+        <select class="input" name="payment">
+          ${["Оплачено", "Ожидает", "Долг"].map(x => `<option ${m.payment === x ? "selected" : ""}>${x}</option>`).join("")}
+        </select></div>
+    `, values => {
+      if (member) Object.assign(member, values);
+      else data.members.push({ id: uid(), ...values });
+    });
+  }
+
+  function sessionModal(session) {
+    const s = session || {};
+    modal(session ? "Изменить занятие" : "Новое занятие", `
+      <div class="field"><label>Название занятия *</label>
+        <input class="input" name="title" required value="${esc(s.title)}"></div>
+      <div class="field"><label>Дата и время *</label>
+        <input class="input" type="datetime-local" name="datetime" required value="${esc(s.datetime)}"></div>
+      <div class="field"><label>Зал или адрес</label>
+        <input class="input" name="place" value="${esc(s.place)}"></div>
+      <div class="field"><label>Тренер</label>
+        <input class="input" name="coach" value="${esc(s.coach)}"></div>
+    `, values => {
+      if (session) Object.assign(session, values);
+      else data.sessions.push({ id: uid(), ...values });
+    });
+  }
+
+  document.querySelectorAll("nav button").forEach(button =>
+    button.onclick = () => showPage(button.dataset.page)
+  );
+
+  render();
+})();
+</script>
+</body>
+</html>
